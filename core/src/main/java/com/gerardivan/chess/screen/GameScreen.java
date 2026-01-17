@@ -48,7 +48,7 @@ public class GameScreen implements Screen {
         camera.position.set(WORLD_WIDTH / 2f, WORLD_HEIGHT / 2f, 0);
         camera.update();
 
-        boardTexture = new Texture(Utils.TAULER);
+        boardTexture = new Texture(Utils.IMATGE_TAULER);
 
         // Centrar tablero con márgenes automáticos
         boardX = (WORLD_WIDTH - BOARD_SIZE) / 2f;
@@ -134,7 +134,6 @@ public class GameScreen implements Screen {
                 novaCasellaClicada = null;
             }
         }
-        System.out.println(board);
     }
 
     @Override
