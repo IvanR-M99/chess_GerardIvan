@@ -1,19 +1,33 @@
 package com.gerardivan.chess.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.gerardivan.chess.Main;
 import com.gerardivan.chess.model.Board;
 import com.gerardivan.chess.model.Piece;
 import com.gerardivan.chess.util.Utils;
 
 public class GameScreen implements Screen {
+
+    private Main game;
+
+    private Stage stage;
+    private Skin skin;
 
     private SpriteBatch batch;
     private Texture boardTexture;
@@ -37,6 +51,10 @@ public class GameScreen implements Screen {
     int[] casellaClicada;
     int[] novaCasellaClicada;
 
+    public GameScreen(Main game) {
+        this.game = game;
+    }
+
     @Override
     public void show() {
         batch = new SpriteBatch();
@@ -55,10 +73,48 @@ public class GameScreen implements Screen {
         boardY = (WORLD_HEIGHT - BOARD_SIZE) / 2f;
 
         tileSize = BOARD_SIZE / Utils.CELES_TAULER;
+
+        stage = new Stage(viewport, batch);
+        skin = new Skin(Gdx.files.internal("assets/uiskin.json"));
+
+        crearUI();
+
+        Gdx.input.setInputProcessor(null);
+
+        InputMultiplexer mux = new InputMultiplexer();
+        mux.addProcessor(stage);
+        mux.addProcessor(new InputAdapter() {
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                return false; // deja pasar al juego
+            }
+        });
+        Gdx.input.setInputProcessor(mux);
+    }
+
+    private void crearUI() {
+        Table table = new Table();
+        table.setFillParent(true);
+        table.top().right();
+        table.pad(10);
+
+        TextButton btnSortir = new TextButton("Sortir", skin);
+
+        btnSortir.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.getActualMenuScreen().recreateStage();
+                game.setScreen(game.getActualMenuScreen());
+            }
+        });
+
+        table.add(btnSortir).width(140).height(45);
+
+        stage.addActor(table);
     }
 
     /**
-     * Devuelve la casilla (col, row) donde se hizo clic.
+     * Devuelve la casilla (x, y) donde se hizo clic.
      * Retorna null si el clic no está dentro del tablero.
      */
     private int[] getClickedTile() {
@@ -81,7 +137,7 @@ public class GameScreen implements Screen {
         // Calcular columna y fila
         int col = (int) ((worldX - boardX) / tileSize);
         int row = (int) ((worldY - boardY) / tileSize);
-        //row = BOARD_TILES - 1 - row;
+        // row = BOARD_TILES - 1 - row;
 
         return new int[] { col, row };
     }
@@ -103,7 +159,7 @@ public class GameScreen implements Screen {
                     batch.draw(
                             p.getTexture(),
                             boardX + tileSize * col,
-                            boardY + tileSize * row, 
+                            boardY + tileSize * row,
                             tileSize,
                             tileSize);
                 }
@@ -134,6 +190,9 @@ public class GameScreen implements Screen {
                 novaCasellaClicada = null;
             }
         }
+
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override

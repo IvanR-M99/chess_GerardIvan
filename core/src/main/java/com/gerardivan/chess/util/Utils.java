@@ -11,25 +11,25 @@ public class Utils {
     /**
      * Indica la ruta del tauler
      */
-    public static String IMATGE_TAULER = "assets/chess.com-boards-and-pieces/boards/dark_wood.png";
+    public static String IMATGE_TAULER = "assets/chess.com-boards-and-pieces/boards/1_dark_wood.png";
 
-    public static String IMATGE_PEON_BLANC = "assets/chess.com-boards-and-pieces/pieces/classic/wp.png";
-    public static String IMATGE_PEON_NEGRE = "assets/chess.com-boards-and-pieces/pieces/classic/bp.png";
+    public static String IMATGE_PEON_BLANC = "assets/chess.com-boards-and-pieces/pieces/1_classic/wp.png";
+    public static String IMATGE_PEON_NEGRE = "assets/chess.com-boards-and-pieces/pieces/1_classic/bp.png";
 
-    public static String IMATGE_TORRE_BLANC = "assets/chess.com-boards-and-pieces/pieces/classic/wr.png";
-    public static String IMATGE_TORRE_NEGRE = "assets/chess.com-boards-and-pieces/pieces/classic/br.png";
+    public static String IMATGE_TORRE_BLANC = "assets/chess.com-boards-and-pieces/pieces/1_classic/wr.png";
+    public static String IMATGE_TORRE_NEGRE = "assets/chess.com-boards-and-pieces/pieces/1_classic/br.png";
 
-    public static String IMATGE_CAVALL_BLANC = "assets/chess.com-boards-and-pieces/pieces/classic/wn.png";
-    public static String IMATGE_CAVALL_NEGRE = "assets/chess.com-boards-and-pieces/pieces/classic/bn.png";
+    public static String IMATGE_CAVALL_BLANC = "assets/chess.com-boards-and-pieces/pieces/1_classic/wn.png";
+    public static String IMATGE_CAVALL_NEGRE = "assets/chess.com-boards-and-pieces/pieces/1_classic/bn.png";
 
-    public static String IMATGE_ALFIL_BLANC = "assets/chess.com-boards-and-pieces/pieces/classic/wb.png";
-    public static String IMATGE_ALFIL_NEGRE = "assets/chess.com-boards-and-pieces/pieces/classic/bb.png";
+    public static String IMATGE_ALFIL_BLANC = "assets/chess.com-boards-and-pieces/pieces/1_classic/wb.png";
+    public static String IMATGE_ALFIL_NEGRE = "assets/chess.com-boards-and-pieces/pieces/1_classic/bb.png";
 
-    public static String IMATGE_REINA_BLANC = "assets/chess.com-boards-and-pieces/pieces/classic/wq.png";
-    public static String IMATGE_REINA_NEGRE = "assets/chess.com-boards-and-pieces/pieces/classic/bq.png";
+    public static String IMATGE_REINA_BLANC = "assets/chess.com-boards-and-pieces/pieces/1_classic/wq.png";
+    public static String IMATGE_REINA_NEGRE = "assets/chess.com-boards-and-pieces/pieces/1_classic/bq.png";
 
-    public static String IMATGE_REI_BLANC = "assets/chess.com-boards-and-pieces/pieces/classic/wk.png";
-    public static String IMATGE_REI_NEGRE = "assets/chess.com-boards-and-pieces/pieces/classic/bk.png";
+    public static String IMATGE_REI_BLANC = "assets/chess.com-boards-and-pieces/pieces/1_classic/wk.png";
+    public static String IMATGE_REI_NEGRE = "assets/chess.com-boards-and-pieces/pieces/1_classic/bk.png";
 
     public static void setTauler(String s) {
         IMATGE_TAULER = "assets/chess.com-boards-and-pieces/boards/" + s + ".png";

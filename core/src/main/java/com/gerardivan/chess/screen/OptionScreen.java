@@ -98,7 +98,7 @@ public class OptionScreen implements Screen {
         // Añadir todo a la tabla
         table.add(titulo).padBottom(40);
         table.row();
-        table.add(new Label("Tablero:", skin)).pad(5);
+        table.add(new Label("Tauler:", skin)).pad(5);
         table.add(taulersBox).width(200).pad(5);
         table.row();
         table.add(new Label("Peca:", skin)).pad(5);
