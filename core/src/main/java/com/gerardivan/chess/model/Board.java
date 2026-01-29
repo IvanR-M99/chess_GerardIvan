@@ -2,21 +2,26 @@ package com.gerardivan.chess.model;
 
 import com.gerardivan.chess.util.Utils;
 
+import java.util.ArrayList;
+
 public class Board {
 
-    private Piece[][] board;
+    private Piece[][] board; //el tauler és un array bidimensional de "peces", algunes null i altres no
 
     public Board() {
         board = new Piece[Utils.CELES_TAULER][Utils.CELES_TAULER];
         setupInitialPosition();
     }
 
-    /** Inicializa piezas al inicio de la partida */
+    /**
+     * Inicialitza peces i les posiciona per començar la partida
+     */
+
     private void setupInitialPosition() {
-        // Pawns
+        // Peons
         for (int i = 0; i < Utils.CELES_TAULER; i++) {
-            board[i][1] = new Piece(Piece.Tipus.Peon, true, i, 1);   // blancas
-            board[i][6] = new Piece(Piece.Tipus.Peon, false, i, 6);  // negras
+            board[i][1] = new Piece(Piece.Tipus.Peon, true, i, 1);   // blanques
+            board[i][6] = new Piece(Piece.Tipus.Peon, false, i, 6);  // negres
         }
 
         // Torres
@@ -44,23 +49,28 @@ public class Board {
         board[4][7] = new Piece(Piece.Tipus.Rei, false, 4, 7);
     }
 
-    /** Obtiene la pieza en una casilla (null si vacía) */
+    /** Obté la peça en una casella (null si vacía) */
     public Piece getPiece(int col, int row) {
         if (col < 0 || col >= Utils.CELES_TAULER || row < 0 || row >= Utils.CELES_TAULER) return null;
         return board[col][row];
     }
 
     /** Mueve una pieza de una casilla a otra */
-    public void movePiece(int fromCol, int fromRow, int toCol, int toRow) {
-        Piece p = getPiece(fromCol, fromRow);
+    public void movePiece (Piece p, int toCol, int toRow){
         if (p == null) return;
 
-        p.setPosicio(toCol, toRow);
-
         board[toCol][toRow] = p;
-        board[fromCol][fromRow] = null;
+        ArrayList<Integer> list = (ArrayList<Integer>) p.getPosicio();
+        board[list.get(0)][list.get(1)] = null;
+
+
+        p.setPosicio(toCol,toRow);
     }
 
+    /**
+     * Per mostrar el taulell per pantalla (desenvolupador)
+     * @return el tauler pintat
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -72,6 +82,32 @@ public class Board {
             sb.append("\n");
         }
         return String.valueOf(sb);
+    }
+
+    /**
+     * Ens diu si el camí està lliure per fer el moviment
+     * @param x1 fila origen
+     * @param y1 columna origen
+     * @param x2 fila desti
+     * @param y2 columna desti
+     * @return true si està lliure i false si no
+     */
+    public boolean isPathClear(int x1, int y1, int x2, int y2) {
+        int dx = Integer.signum(x2 - x1); //Retorna 1 si avança, -1 si retrocedeix i 0 si no es mou
+        int dy = Integer.signum(y2 - y1); //Retorna 1 si dreta, -1 si esquerra i 0 si no es mou de columna
+
+        //Si el dx=0, voldrà dir que el moviment és vertical, si el dy=0 el mov és horitzontal
+        //Si canvien els dos, diagonal
+        int cx = x1 + dx;
+        int cy = y1 + dy;
+
+        while (cx != x2 || cy != y2) { //mentre la caselle comprovadad no arribi a la de destí
+            if (getPiece(cx, cy) != null) return false; //si hi ha peça, retorna false
+            //Afegim desplaçament en la mateix direcció
+            cx += dx;
+            cy += dy;
+        }
+        return true;
     }
 
 }

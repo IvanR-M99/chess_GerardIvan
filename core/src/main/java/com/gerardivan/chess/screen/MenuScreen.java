@@ -25,14 +25,14 @@ public class MenuScreen implements Screen {
     private Stage stage;
     private Skin skin;
 
-    private static final float BOARD_SIZE = 512;
+    private static final float BOARD_SIZE = 800;
     private float boardX, boardY;
     private Texture boardTexture;
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Viewport viewport;
     private static final float WORLD_WIDTH = 800;
-    private static final float WORLD_HEIGHT = 600;
+    private static final float WORLD_HEIGHT = 800;
 
     public MenuScreen(Main game) {
         this.game = game;
@@ -46,7 +46,7 @@ public class MenuScreen implements Screen {
         stage = new Stage(viewport, batch);
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("assets/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         // Calcular posición centrada
         boardX = (WORLD_WIDTH - BOARD_SIZE) / 2f;

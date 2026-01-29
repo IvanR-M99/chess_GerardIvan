@@ -36,9 +36,9 @@ public class GameScreen implements Screen {
     private Viewport viewport;
 
     private static final float WORLD_WIDTH = 800;
-    private static final float WORLD_HEIGHT = 600;
+    private static final float WORLD_HEIGHT = 800;
 
-    private static final float BOARD_SIZE = 512;
+    private static final float BOARD_SIZE = 800;
 
     private float boardX;
     private float boardY;
@@ -75,7 +75,7 @@ public class GameScreen implements Screen {
         tileSize = BOARD_SIZE / Utils.CELES_TAULER;
 
         stage = new Stage(viewport, batch);
-        skin = new Skin(Gdx.files.internal("assets/uiskin.json"));
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
 
         crearUI();
 
@@ -165,7 +165,6 @@ public class GameScreen implements Screen {
                 }
             }
         }
-
         batch.end();
 
         int[] tile = getClickedTile();
@@ -177,13 +176,14 @@ public class GameScreen implements Screen {
                     casellaClicada = tile;
                     System.out.println("Pieza seleccionada: " + tile[0] + ", " + tile[1]);
                 }
-            } else {
-                // Segundo clic: mover pieza
+            } else { //si has fet el primer click
+                // Segon clic: moure peça
                 novaCasellaClicada = tile;
+                Piece p = board.getPiece(casellaClicada[0], casellaClicada[1]);
 
-                // Mover en el Board
-                board.movePiece(casellaClicada[0], casellaClicada[1],
-                        novaCasellaClicada[0], novaCasellaClicada[1]);
+                if (p.canMoveTo(board, novaCasellaClicada[0], novaCasellaClicada[1])){
+                    board.movePiece(p,novaCasellaClicada[0], novaCasellaClicada[1]);
+                }
 
                 // Limpiar selección
                 casellaClicada = null;
