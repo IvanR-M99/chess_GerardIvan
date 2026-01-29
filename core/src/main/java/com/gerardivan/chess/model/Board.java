@@ -164,6 +164,39 @@ public class Board {
         return String.valueOf(sb);
     }
 
+    public boolean hasAnyLegalMove(boolean color) {
+        for (Piece[] row : board) {
+            for (Piece p : row) {
+                if (p != null && p.getColor() == color) {
+
+                    int x = p.getPosicio().get(0);
+                    int y = p.getPosicio().get(1);
+
+                    for (int col = 0; col < Utils.CELES_TAULER; col++) {
+                        for (int row2 = 0; row2 < Utils.CELES_TAULER; row2++) {
+
+                            if (p.canMoveTo(this, col, row2)
+                                && tryMove(p, col, row2)) {
+                                return true; // hay al menos un movimiento legal
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isCheckMate(boolean color) {
+        if (!isKingInCheck(color)) return false;
+        return !hasAnyLegalMove(color);
+    }
+
+    public boolean isStalemate(boolean color) {
+        if (isKingInCheck(color)) return false;
+        return !hasAnyLegalMove(color);
+    }
+
     /**
      * Ens diu si el camí està lliure per fer el moviment
      *

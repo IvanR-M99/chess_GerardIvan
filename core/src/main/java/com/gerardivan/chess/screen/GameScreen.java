@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -21,7 +22,6 @@ import com.gerardivan.chess.Main;
 import com.gerardivan.chess.model.Board;
 import com.gerardivan.chess.model.Piece;
 import com.gerardivan.chess.util.Utils;
-
 import java.util.ArrayList;
 
 public class GameScreen implements Screen {
@@ -52,7 +52,7 @@ public class GameScreen implements Screen {
     ArrayList<int[]> possibleMoves = new ArrayList<>();
     int[] casellaClicada;
     int[] novaCasellaClicada;
-
+    boolean gameFinished = false;
     public GameScreen(Main game) {
         this.game = game;
     }
@@ -60,7 +60,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         batch = new SpriteBatch();
-        highlightTexture = new Texture("resaltado.png");
+        highlightTexture = new Texture("chess.com-boards-and-pieces/resaltado.png");
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         viewport.apply();
@@ -164,11 +164,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.setProjectionMatrix(camera.combined);
-
         batch.begin();
 
         //pintem tauler
@@ -201,6 +201,12 @@ public class GameScreen implements Screen {
         }
         batch.end();
 
+        if (gameFinished) {
+            stage.act(delta);
+            stage.draw();
+            return;
+        }
+
         int[] tile = getClickedTile();
         if (tile != null) {
             if (casellaClicada == null) {
@@ -219,6 +225,14 @@ public class GameScreen implements Screen {
                 if (p.canMoveTo(board, novaCasellaClicada[0], novaCasellaClicada[1]) &&
                     board.tryMove(p, novaCasellaClicada[0], novaCasellaClicada[1])){
                         board.movePiece(p,novaCasellaClicada[0], novaCasellaClicada[1]);
+                    if (board.isCheckMate(!p.getColor())) {
+                        showEndGameDialog(
+                            "Jaque mate.\nGanan las " + (p.getColor() ? "BLANCAS" : "NEGRAS")
+                        );
+                    }
+                    else if (board.isStalemate(!p.getColor())) {
+                        showEndGameDialog("Rey ahogado.\nEmpate");
+                    }
                 }
                 // Limpiar selección
                 casellaClicada = null;
@@ -229,6 +243,42 @@ public class GameScreen implements Screen {
 
         stage.act(delta);
         stage.draw();
+    }
+
+    private void showEndGameDialog(String message) {
+        gameFinished = true;
+        Dialog dialog = new Dialog("Fin de la partida", skin) {
+
+            @Override
+            protected void result(Object object) {
+                String action = (String) object;
+
+                switch (action) {
+                    case "replay":
+                        game.setScreen(new GameScreen(game));
+                        break;
+
+                    case "menu":
+                        game.getActualMenuScreen().recreateStage();
+                        game.setScreen(game.getActualMenuScreen());
+                        break;
+
+                    case "exit":
+                        Gdx.app.exit();
+                        break;
+                }
+            }
+        };
+
+        dialog.text(message);
+        dialog.button("Volver a jugar", "replay");
+        dialog.button("Menú principal", "menu");
+        dialog.button("Salir", "exit");
+
+        dialog.getContentTable().pad(20);
+        dialog.getButtonTable().pad(10);
+
+        dialog.show(stage);
     }
 
     @Override
