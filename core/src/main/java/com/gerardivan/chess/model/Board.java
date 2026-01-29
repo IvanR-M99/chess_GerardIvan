@@ -1,12 +1,34 @@
 package com.gerardivan.chess.model;
 
+import com.gerardivan.chess.model.Piece.Tipus;
 import com.gerardivan.chess.util.Utils;
 
 import java.util.ArrayList;
 
 public class Board {
 
-    private Piece[][] board; //el tauler és un array bidimensional de "peces", algunes null i altres no
+    private static Piece[][] board; //el tauler és un array bidimensional de "peces", algunes null i altres no
+
+    private boolean reiBlancAtacat = false;
+    private boolean reiNegreAtacat = false;
+
+    private boolean tornBlanques = true;
+
+    public boolean isReiBlancAtacat() {
+        return reiBlancAtacat;
+    }
+
+    public void setReiBlancAtacat(boolean reiBlancAtacat) {
+        this.reiBlancAtacat = reiBlancAtacat;
+    }
+
+    public boolean isReiNegreAtacat() {
+        return reiNegreAtacat;
+    }
+
+    public void setReiNegreAtacat(boolean reiNegreAtacat) {
+        this.reiNegreAtacat = reiNegreAtacat;
+    }
 
     public Board() {
         board = new Piece[Utils.CELES_TAULER][Utils.CELES_TAULER];
@@ -55,6 +77,17 @@ public class Board {
         return board[col][row];
     }
 
+    public static Piece getRey(boolean esBlanc) {
+        for (Piece[] linea : board) {
+            for (Piece p : linea) {
+                if (p.getTipus() == Tipus.Rei && p.getColor() == esBlanc) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
     /** Mueve una pieza de una casilla a otra */
     public void movePiece (Piece p, int toCol, int toRow){
         if (p == null) return;
@@ -65,6 +98,17 @@ public class Board {
 
 
         p.setPosicio(toCol,toRow);
+
+        Piece rei = getRey(!p.getColor());
+
+        if (p.canMoveTo(this, rei.getPosicio().get(0), rei.getPosicio().get(1))) {
+            if (rei.getColor()) {
+                reiBlancAtacat = true;
+            } else {
+                reiNegreAtacat = true;
+            }
+        }
+        
     }
 
     /**
@@ -109,5 +153,7 @@ public class Board {
         }
         return true;
     }
+
+
 
 }
