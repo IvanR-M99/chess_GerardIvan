@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private static Piece[][] board; //el tauler és un array bidimensional de "peces", algunes null i altres no
+    private static Piece[][] board; // el tauler és un array bidimensional de "peces", algunes null i altres no
 
     private boolean reiBlancAtacat = false;
     private boolean reiNegreAtacat = false;
@@ -42,8 +42,8 @@ public class Board {
     private void setupInitialPosition() {
         // Peons
         for (int i = 0; i < Utils.CELES_TAULER; i++) {
-            board[i][1] = new Piece(Piece.Tipus.Peon, true, i, 1);   // blanques
-            board[i][6] = new Piece(Piece.Tipus.Peon, false, i, 6);  // negres
+            board[i][1] = new Piece(Piece.Tipus.Peon, true, i, 1); // blanques
+            board[i][6] = new Piece(Piece.Tipus.Peon, false, i, 6); // negres
         }
 
         // Torres
@@ -73,31 +73,35 @@ public class Board {
 
     /** Obté la peça en una casella (null si vacía) */
     public Piece getPiece(int col, int row) {
-        if (col < 0 || col >= Utils.CELES_TAULER || row < 0 || row >= Utils.CELES_TAULER) return null;
+        if (col < 0 || col >= Utils.CELES_TAULER || row < 0 || row >= Utils.CELES_TAULER)
+            return null;
         return board[col][row];
     }
 
     public static Piece getRey(boolean esBlanc) {
         for (Piece[] linea : board) {
             for (Piece p : linea) {
-                if (p.getTipus() == Tipus.Rei && p.getColor() == esBlanc) {
-                    return p;
+                if (p != null) {
+                    if (p.getTipus() == Tipus.Rei && p.getColor() == esBlanc) {
+                        return p;
+                    }
                 }
+
             }
         }
         return null;
     }
 
     /** Mueve una pieza de una casilla a otra */
-    public void movePiece (Piece p, int toCol, int toRow){
-        if (p == null) return;
+    public void movePiece(Piece p, int toCol, int toRow) {
+        if (p == null)
+            return;
 
         board[toCol][toRow] = p;
         ArrayList<Integer> list = (ArrayList<Integer>) p.getPosicio();
         board[list.get(0)][list.get(1)] = null;
 
-
-        p.setPosicio(toCol,toRow);
+        p.setPosicio(toCol, toRow);
 
         Piece rei = getRey(!p.getColor());
 
@@ -108,11 +112,12 @@ public class Board {
                 reiNegreAtacat = true;
             }
         }
-        
+
     }
 
     /**
      * Per mostrar el taulell per pantalla (desenvolupador)
+     * 
      * @return el tauler pintat
      */
     @Override
@@ -130,6 +135,7 @@ public class Board {
 
     /**
      * Ens diu si el camí està lliure per fer el moviment
+     * 
      * @param x1 fila origen
      * @param y1 columna origen
      * @param x2 fila desti
@@ -137,23 +143,23 @@ public class Board {
      * @return true si està lliure i false si no
      */
     public boolean isPathClear(int x1, int y1, int x2, int y2) {
-        int dx = Integer.signum(x2 - x1); //Retorna 1 si avança, -1 si retrocedeix i 0 si no es mou
-        int dy = Integer.signum(y2 - y1); //Retorna 1 si dreta, -1 si esquerra i 0 si no es mou de columna
+        int dx = Integer.signum(x2 - x1); // Retorna 1 si avança, -1 si retrocedeix i 0 si no es mou
+        int dy = Integer.signum(y2 - y1); // Retorna 1 si dreta, -1 si esquerra i 0 si no es mou de columna
 
-        //Si el dx=0, voldrà dir que el moviment és vertical, si el dy=0 el mov és horitzontal
-        //Si canvien els dos, diagonal
+        // Si el dx=0, voldrà dir que el moviment és vertical, si el dy=0 el mov és
+        // horitzontal
+        // Si canvien els dos, diagonal
         int cx = x1 + dx;
         int cy = y1 + dy;
 
-        while (cx != x2 || cy != y2) { //mentre la caselle comprovadad no arribi a la de destí
-            if (getPiece(cx, cy) != null) return false; //si hi ha peça, retorna false
-            //Afegim desplaçament en la mateix direcció
+        while (cx != x2 || cy != y2) { // mentre la caselle comprovadad no arribi a la de destí
+            if (getPiece(cx, cy) != null)
+                return false; // si hi ha peça, retorna false
+            // Afegim desplaçament en la mateix direcció
             cx += dx;
             cy += dy;
         }
         return true;
     }
-
-
 
 }

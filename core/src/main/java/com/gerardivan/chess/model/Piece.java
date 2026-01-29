@@ -160,8 +160,11 @@ public class Piece {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
-        if (target.esBlanca == this.esBlanca)
-            return false;
+        if (target != null) {
+            if (target.esBlanca == this.esBlanca)
+                return false;
+        }
+
         if (x != dx && y != dy)
             return false;
         return board.isPathClear(x, y, dx, dy);
@@ -171,8 +174,10 @@ public class Piece {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
-        if (target.esBlanca == this.esBlanca)
-            return false;
+        if (target != null) {
+            if (target.esBlanca == this.esBlanca)
+                return false;
+        }
 
         int cx = Math.abs(dx - x);
         int cy = Math.abs(dy - y);
@@ -183,8 +188,10 @@ public class Piece {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
-        if (target.esBlanca == this.esBlanca)
-            return false;
+        if (target != null) {
+            if (target.esBlanca == this.esBlanca)
+                return false;
+        }
 
         if (Math.abs(dx - x) != Math.abs(dy - y))
             return false;
@@ -195,8 +202,10 @@ public class Piece {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
-        if (target.esBlanca == this.esBlanca)
-            return false;
+        if (target != null) {
+            if (target.esBlanca == this.esBlanca)
+                return false;
+        }
 
         boolean recte = x == dx || y == dy;
         boolean diagonal = Math.abs(dx - x) == Math.abs(dy - y);
@@ -207,10 +216,13 @@ public class Piece {
     }
 
     private boolean canMoveRei(Board board, int x, int y, int dx, int dy) {
-        //Peça en el destí
+        // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
-        if (target.esBlanca == this.esBlanca) return false;
+        if (target != null) {
+            if (target.esBlanca == this.esBlanca)
+                return false;
+        }
 
         return Math.abs(dx - x) <= 1 && Math.abs(dy - y) <= 1;
     }
