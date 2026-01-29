@@ -86,7 +86,6 @@ public class Board {
                         return p;
                     }
                 }
-
             }
         }
         return null;
@@ -103,21 +102,53 @@ public class Board {
 
         p.setPosicio(toCol, toRow);
 
-        Piece rei = getRey(!p.getColor());
+        reiBlancAtacat = isKingInCheck(true);
+        reiNegreAtacat = isKingInCheck(false);
+    }
 
-        if (p.canMoveTo(this, rei.getPosicio().get(0), rei.getPosicio().get(1))) {
-            if (rei.getColor()) {
-                reiBlancAtacat = true;
-            } else {
-                reiNegreAtacat = true;
+    public boolean isKingInCheck(boolean kingIsWhite) {
+        Piece king = getRey(kingIsWhite);
+        if (king == null) return false;
+
+        int kx = king.getPosicio().get(0);
+        int ky = king.getPosicio().get(1);
+
+        for (Piece[] row : board) {
+            for (Piece p : row) {
+                if (p != null && p.getColor() != kingIsWhite) {
+                    if (p.canMoveTo(this, kx, ky)) {
+                        return true;
+                    }
+                }
             }
         }
+        return false;
+    }
 
+    public boolean tryMove(Piece p, int toX, int toY) {
+        int fromX = p.getPosicio().get(0);
+        int fromY = p.getPosicio().get(1);
+
+        Piece captured = board[toX][toY];
+
+        // Simular movimiento
+        board[toX][toY] = p;
+        board[fromX][fromY] = null;
+        p.setPosicio(toX, toY);
+
+        boolean inCheck = isKingInCheck(p.getColor());
+
+        // Deshacer
+        board[fromX][fromY] = p;
+        board[toX][toY] = captured;
+        p.setPosicio(fromX, fromY);
+
+        return !inCheck;
     }
 
     /**
      * Per mostrar el taulell per pantalla (desenvolupador)
-     * 
+     *
      * @return el tauler pintat
      */
     @Override
@@ -135,7 +166,7 @@ public class Board {
 
     /**
      * Ens diu si el camí està lliure per fer el moviment
-     * 
+     *
      * @param x1 fila origen
      * @param y1 columna origen
      * @param x2 fila desti
@@ -161,5 +192,7 @@ public class Board {
         }
         return true;
     }
+
+
 
 }

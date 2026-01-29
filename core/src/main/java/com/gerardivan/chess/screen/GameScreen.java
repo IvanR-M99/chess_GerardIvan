@@ -22,6 +22,8 @@ import com.gerardivan.chess.model.Board;
 import com.gerardivan.chess.model.Piece;
 import com.gerardivan.chess.util.Utils;
 
+import java.util.ArrayList;
+
 public class GameScreen implements Screen {
 
     private Main game;
@@ -30,7 +32,7 @@ public class GameScreen implements Screen {
     private Skin skin;
 
     private SpriteBatch batch;
-    private Texture boardTexture;
+    private Texture boardTexture, highlightTexture;;
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -47,7 +49,7 @@ public class GameScreen implements Screen {
     private final Vector2 touch = new Vector2();
 
     Board board = new Board();
-
+    ArrayList<int[]> possibleMoves = new ArrayList<>();
     int[] casellaClicada;
     int[] novaCasellaClicada;
 
@@ -58,7 +60,7 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         batch = new SpriteBatch();
-
+        highlightTexture = new Texture("resaltado.png");
         camera = new OrthographicCamera();
         viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
         viewport.apply();
@@ -142,6 +144,24 @@ public class GameScreen implements Screen {
         return new int[] { col, row };
     }
 
+    private void calculatePossibleMoves(Piece p) {
+        possibleMoves.clear();
+
+        int x = p.getPosicio().get(0);
+        int y = p.getPosicio().get(1);
+
+        for (int col = 0; col < Utils.CELES_TAULER; col++) {
+            for (int row = 0; row < Utils.CELES_TAULER; row++) {
+
+                if (p.canMoveTo(board, col, row)
+                    && board.tryMove(p, col, row)) {
+
+                    possibleMoves.add(new int[]{col, row});
+                }
+            }
+        }
+    }
+
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -150,8 +170,22 @@ public class GameScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
+
+        //pintem tauler
         batch.draw(boardTexture, boardX, boardY, BOARD_SIZE, BOARD_SIZE);
 
+        // Movimientos possibles
+        for (int[] move : possibleMoves) {
+            batch.draw(
+                highlightTexture, //pintem el resaltat
+                boardX + tileSize * move[0],
+                boardY + tileSize * move[1],
+                tileSize,
+                tileSize
+            );
+        }
+
+        //Pintem peces
         for (int col = 0; col < Utils.CELES_TAULER; col++) {
             for (int row = 0; row < Utils.CELES_TAULER; row++) {
                 Piece p = board.getPiece(col, row);
@@ -174,6 +208,7 @@ public class GameScreen implements Screen {
                 Piece p = board.getPiece(tile[0], tile[1]);
                 if (p != null) {
                     casellaClicada = tile;
+                    calculatePossibleMoves(p);
                     System.out.println("Pieza seleccionada: " + tile[0] + ", " + tile[1]);
                 }
             } else { //si has fet el primer click
@@ -181,13 +216,14 @@ public class GameScreen implements Screen {
                 novaCasellaClicada = tile;
                 Piece p = board.getPiece(casellaClicada[0], casellaClicada[1]);
 
-                if (p.canMoveTo(board, novaCasellaClicada[0], novaCasellaClicada[1])){
-                    board.movePiece(p,novaCasellaClicada[0], novaCasellaClicada[1]);
+                if (p.canMoveTo(board, novaCasellaClicada[0], novaCasellaClicada[1]) &&
+                    board.tryMove(p, novaCasellaClicada[0], novaCasellaClicada[1])){
+                        board.movePiece(p,novaCasellaClicada[0], novaCasellaClicada[1]);
                 }
-
                 // Limpiar selección
                 casellaClicada = null;
                 novaCasellaClicada = null;
+                possibleMoves.clear();
             }
         }
 
