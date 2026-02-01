@@ -14,32 +14,15 @@ public class Board {
 
     private boolean tornBlanques = true;
 
-    public boolean isReiBlancAtacat() {
-        return reiBlancAtacat;
-    }
-
-    public void setReiBlancAtacat(boolean reiBlancAtacat) {
-        this.reiBlancAtacat = reiBlancAtacat;
-    }
-
-    public boolean isReiNegreAtacat() {
-        return reiNegreAtacat;
-    }
-
-    public void setReiNegreAtacat(boolean reiNegreAtacat) {
-        this.reiNegreAtacat = reiNegreAtacat;
-    }
-
     public Board() {
         board = new Piece[Utils.CELES_TAULER][Utils.CELES_TAULER];
-        setupInitialPosition();
+        posicionamentInicial();
     }
 
     /**
      * Inicialitza peces i les posiciona per començar la partida
      */
-
-    private void setupInitialPosition() {
+    private void posicionamentInicial() {
         // Peons
         for (int i = 0; i < Utils.CELES_TAULER; i++) {
             board[i][1] = new Piece(Piece.Tipus.Peon, true, i, 1); // blanques
@@ -78,6 +61,14 @@ public class Board {
         return board[col][row];
     }
 
+    public boolean isWhiteTurn() {
+        return tornBlanques;
+    }
+
+    public void seguentTorn() {
+        tornBlanques = !tornBlanques;
+    }
+
     public static Piece getRey(boolean esBlanc) {
         for (Piece[] linea : board) {
             for (Piece p : linea) {
@@ -92,7 +83,7 @@ public class Board {
     }
 
     /** Mueve una pieza de una casilla a otra */
-    public void movePiece(Piece p, int toCol, int toRow) {
+    public void mourePiece(Piece p, int toCol, int toRow) {
         if (p == null)
             return;
 
@@ -102,11 +93,53 @@ public class Board {
 
         p.setPosicio(toCol, toRow);
 
-        reiBlancAtacat = isKingInCheck(true);
-        reiNegreAtacat = isKingInCheck(false);
+        reiBlancAtacat = estaReiJaque(true);
+        reiNegreAtacat = estaReiJaque(false);
+
+        if (p.getTipus() == Piece.Tipus.Peon) {
+            int y = p.getPosicio().get(1);
+            if ((p.getColor() && y == 7) || (!p.getColor() && y == 0)) {
+                promocioPeo(p);
+            }
+        }
+
+        // ENROQUE: mover torre
+        if (p.getTipus() == Piece.Tipus.Rei && Math.abs(toCol - list.get(0)) == 2) {
+            boolean kingSide = toCol > list.get(0);
+
+            int rookFrom = kingSide ? 7 : 0;
+            int rookTo = kingSide ? toCol - 1 : toCol + 1;
+
+            Piece rook = getPiece(rookFrom, toRow);
+
+            board[rookTo][toRow] = rook;
+            board[rookFrom][toRow] = null;
+
+            rook.setPosicio(rookTo, toRow);
+            rook.hasMoved = true;
+        }
+
+        p.hasMoved = true; //Marquem que la peça s'ha mogut almenys un cop
     }
 
-    public boolean isKingInCheck(boolean kingIsWhite) {
+    /**
+     * Mètode per promocionar peó a reina
+     * @param pawn
+     */
+    private void promocioPeo(Piece pawn) {
+        int x = pawn.getPosicio().get(0);
+        int y = pawn.getPosicio().get(1);
+        boolean color = pawn.getColor();
+
+        board[x][y] = new Piece(Piece.Tipus.Reina, color, x, y);
+    }
+
+    /**
+     * Mètode per comprovar si el rei està en jaque
+     * @param kingIsWhite passem el color del rei
+     * @return true
+     */
+    public boolean estaReiJaque(boolean kingIsWhite) {
         Piece king = getRey(kingIsWhite);
         if (king == null) return false;
 
@@ -116,7 +149,7 @@ public class Board {
         for (Piece[] row : board) {
             for (Piece p : row) {
                 if (p != null && p.getColor() != kingIsWhite) {
-                    if (p.canMoveTo(this, kx, ky)) {
+                    if (p.pucMoureA(this, kx, ky)) {
                         return true;
                     }
                 }
@@ -125,6 +158,14 @@ public class Board {
         return false;
     }
 
+    /**
+     * Possible moviment, però no el fa realment, que torna a la posició inicial,
+     * si no que és per mirar si és un moviment possible
+     * @param p
+     * @param toX
+     * @param toY
+     * @return true si és possible, i false si no (
+     */
     public boolean tryMove(Piece p, int toX, int toY) {
         int fromX = p.getPosicio().get(0);
         int fromY = p.getPosicio().get(1);
@@ -136,14 +177,14 @@ public class Board {
         board[fromX][fromY] = null;
         p.setPosicio(toX, toY);
 
-        boolean inCheck = isKingInCheck(p.getColor());
+        boolean inCheck = estaReiJaque(p.getColor());
 
         // Deshacer
         board[fromX][fromY] = p;
         board[toX][toY] = captured;
         p.setPosicio(fromX, fromY);
 
-        return !inCheck;
+        return !inCheck; //si no està en jaque
     }
 
     /**
@@ -164,20 +205,22 @@ public class Board {
         return String.valueOf(sb);
     }
 
+    /**
+     * Mètode per veure si (el rei ) té algun possible moviment (true) o no (false)
+     * @param color
+     * @return
+     */
     public boolean hasAnyLegalMove(boolean color) {
         for (Piece[] row : board) {
             for (Piece p : row) {
                 if (p != null && p.getColor() == color) {
 
-                    int x = p.getPosicio().get(0);
-                    int y = p.getPosicio().get(1);
-
                     for (int col = 0; col < Utils.CELES_TAULER; col++) {
                         for (int row2 = 0; row2 < Utils.CELES_TAULER; row2++) {
 
-                            if (p.canMoveTo(this, col, row2)
+                            if (p.pucMoureA(this, col, row2)
                                 && tryMove(p, col, row2)) {
-                                return true; // hay al menos un movimiento legal
+                                return true; // si hi ha almenys un moviment legal
                             }
                         }
                     }
@@ -187,13 +230,23 @@ public class Board {
         return false;
     }
 
+    /**
+     * Mètode per avaluar si és jaque mate (si està en jaque i no té cap possible moviment)
+     * @param color
+     * @return
+     */
     public boolean isCheckMate(boolean color) {
-        if (!isKingInCheck(color)) return false;
+        if (!estaReiJaque(color)) return false;
         return !hasAnyLegalMove(color);
     }
 
+    /**
+     * Mètode per avaluar si el rei està ofegat (si no està en jaque i no té cap possible moviment)
+     * @param color
+     * @return
+     */
     public boolean isStalemate(boolean color) {
-        if (isKingInCheck(color)) return false;
+        if (estaReiJaque(color)) return false;
         return !hasAnyLegalMove(color);
     }
 
@@ -224,6 +277,62 @@ public class Board {
             cy += dy;
         }
         return true;
+    }
+
+    /**
+     * Mètode que valora si és possible l'enroc: primer si seria el curt o el llarg, després mira
+     * que no hi hagi cap peça pel camí, ni que les caselles estiguin atacades
+     * @param king
+     * @param kingSide si es treu:enroc llarg, si es false: enroc curt
+     * @return
+     */
+    public boolean pucEnrocar(Piece king, boolean kingSide) {
+
+        if (king.hasMoved) return false;
+        if (estaReiJaque(king.getColor())) return false;
+
+        // en funció de l'enrroc que sigui, em mouré (crearé la torre) cap a la dreta o cap a l'esquerra
+        int y = king.getPosicio().get(1);
+        int rookX = kingSide ? 7 : 0;
+        int step = kingSide ? 1 : -1;
+
+        Piece rook = getPiece(rookX, y);
+        if (rook == null || rook.getTipus() != Piece.Tipus.Torre || rook.hasMoved)
+            return false;
+
+        // cami lliure
+        for (int x = king.getPosicio().get(0) + step; x != rookX; x += step) {
+            if (getPiece(x, y) != null) return false;
+        }
+
+        // el rei no pot passar per casellas atacades
+        for (int i = 1; i <= 2; i++) {
+            int x = king.getPosicio().get(0) + step * i;
+            if (casellaAtacada(x, y, !king.getColor()))
+                return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Per comprovar si una casella està amenaçada. Útil per comprovar si es pot enrocar.
+     * @param x
+     * @param y
+     * @param byWhite
+     * @return
+     */
+    public boolean casellaAtacada(int x, int y, boolean byWhite) {
+        for (Piece[] row : board) {
+            for (Piece p : row) {
+                if (p != null && p.getColor() == byWhite) {
+                    if (p.pucMoureA(this, x, y)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 

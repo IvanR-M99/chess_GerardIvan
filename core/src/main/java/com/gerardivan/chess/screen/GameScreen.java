@@ -22,6 +22,7 @@ import com.gerardivan.chess.Main;
 import com.gerardivan.chess.model.Board;
 import com.gerardivan.chess.model.Piece;
 import com.gerardivan.chess.util.Utils;
+
 import java.util.ArrayList;
 
 public class GameScreen implements Screen {
@@ -32,7 +33,8 @@ public class GameScreen implements Screen {
     private Skin skin;
 
     private SpriteBatch batch;
-    private Texture boardTexture, highlightTexture;;
+    private Texture boardTexture, highlightTexture;
+
 
     private OrthographicCamera camera;
     private Viewport viewport;
@@ -40,7 +42,9 @@ public class GameScreen implements Screen {
     private static final float WORLD_WIDTH = 800;
     private static final float WORLD_HEIGHT = 800;
 
-    private static final float BOARD_SIZE = 800;
+    private final float MARGIN = 80; // margen en píxeles para botones/espacio UI
+
+    private final float BOARD_SIZE = Math.min(WORLD_WIDTH, WORLD_HEIGHT) - MARGIN;
 
     private float boardX;
     private float boardY;
@@ -49,10 +53,11 @@ public class GameScreen implements Screen {
     private final Vector2 touch = new Vector2();
 
     Board board = new Board();
-    ArrayList<int[]> possibleMoves = new ArrayList<>();
+    ArrayList<int[]> possibleMoviments = new ArrayList<>();
     int[] casellaClicada;
     int[] novaCasellaClicada;
     boolean gameFinished = false;
+
     public GameScreen(Main game) {
         this.game = game;
     }
@@ -94,14 +99,24 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(mux);
     }
 
+    /**
+     * Botó sortir dins de la pantalla del joc
+     */
     private void crearUI() {
         Table table = new Table();
         table.setFillParent(true);
         table.top().right();
-        table.pad(10);
+        table.padRight(40); // margen desde el borde
+
+        TextButton btnReiniciar = new TextButton("Reinciar partida", skin);
+        btnReiniciar.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GameScreen(game));
+            }
+        });
 
         TextButton btnSortir = new TextButton("Sortir", skin);
-
         btnSortir.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -110,53 +125,51 @@ public class GameScreen implements Screen {
             }
         });
 
-        table.add(btnSortir).width(140).height(45);
+        table.add(btnReiniciar).width(140).height(30).padRight(10); // margen entre botones
+        table.add(btnSortir).width(90).height(30);
 
         stage.addActor(table);
     }
 
     /**
-     * Devuelve la casilla (x, y) donde se hizo clic.
-     * Retorna null si el clic no está dentro del tablero.
+     * Retorna la casella (x, y) on es fa el click.
+     * Retorna null si el clic no està dins del taulell
      */
-    private int[] getClickedTile() {
+    private int[] getCasellaClicada() {
         if (!Gdx.input.justTouched())
             return null;
 
-        // Convertir coordenadas de pantalla → mundo
+        // Convertir coordenadas de pantalla a món
         touch.set(Gdx.input.getX(), Gdx.input.getY());
         viewport.unproject(touch);
 
         float worldX = touch.x;
         float worldY = touch.y;
 
-        // Comprobar si el clic está dentro del tablero
+        // Comprovar si el clic està dins del taulell
         if (worldX < boardX || worldX >= boardX + BOARD_SIZE ||
-                worldY < boardY || worldY >= boardY + BOARD_SIZE) {
+            worldY < boardY || worldY >= boardY + BOARD_SIZE) {
             return null;
         }
 
-        // Calcular columna y fila
+        // Calcular columna i fila
         int col = (int) ((worldX - boardX) / tileSize);
         int row = (int) ((worldY - boardY) / tileSize);
         // row = BOARD_TILES - 1 - row;
 
-        return new int[] { col, row };
+        return new int[]{col, row};
     }
 
-    private void calculatePossibleMoves(Piece p) {
-        possibleMoves.clear();
-
-        int x = p.getPosicio().get(0);
-        int y = p.getPosicio().get(1);
+    private void calcularPossiblesMoviments(Piece p) {
+        possibleMoviments.clear();
 
         for (int col = 0; col < Utils.CELES_TAULER; col++) {
             for (int row = 0; row < Utils.CELES_TAULER; row++) {
 
-                if (p.canMoveTo(board, col, row)
+                if (p.pucMoureA(board, col, row)
                     && board.tryMove(p, col, row)) {
 
-                    possibleMoves.add(new int[]{col, row});
+                    possibleMoviments.add(new int[]{col, row});
                 }
             }
         }
@@ -164,10 +177,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
@@ -175,7 +186,7 @@ public class GameScreen implements Screen {
         batch.draw(boardTexture, boardX, boardY, BOARD_SIZE, BOARD_SIZE);
 
         // Movimientos possibles
-        for (int[] move : possibleMoves) {
+        for (int[] move : possibleMoviments) {
             batch.draw(
                 highlightTexture, //pintem el resaltat
                 boardX + tileSize * move[0],
@@ -191,11 +202,11 @@ public class GameScreen implements Screen {
                 Piece p = board.getPiece(col, row);
                 if (p != null && p.getTexture() != null) {
                     batch.draw(
-                            p.getTexture(),
-                            boardX + tileSize * col,
-                            boardY + tileSize * row,
-                            tileSize,
-                            tileSize);
+                        p.getTexture(),
+                        boardX + tileSize * col,
+                        boardY + tileSize * row,
+                        tileSize,
+                        tileSize);
                 }
             }
         }
@@ -207,14 +218,14 @@ public class GameScreen implements Screen {
             return;
         }
 
-        int[] tile = getClickedTile();
+        int[] tile = getCasellaClicada();
         if (tile != null) {
             if (casellaClicada == null) {
                 // Primer clic: seleccionar pieza
                 Piece p = board.getPiece(tile[0], tile[1]);
-                if (p != null) {
+                if (p != null && p.getColor() == board.isWhiteTurn()) {
                     casellaClicada = tile;
-                    calculatePossibleMoves(p);
+                    calcularPossiblesMoviments(p);
                     System.out.println("Pieza seleccionada: " + tile[0] + ", " + tile[1]);
                 }
             } else { //si has fet el primer click
@@ -222,22 +233,26 @@ public class GameScreen implements Screen {
                 novaCasellaClicada = tile;
                 Piece p = board.getPiece(casellaClicada[0], casellaClicada[1]);
 
-                if (p.canMoveTo(board, novaCasellaClicada[0], novaCasellaClicada[1]) &&
-                    board.tryMove(p, novaCasellaClicada[0], novaCasellaClicada[1])){
-                        board.movePiece(p,novaCasellaClicada[0], novaCasellaClicada[1]);
+                if (p.pucMoureA(board, novaCasellaClicada[0], novaCasellaClicada[1]) &&
+                    board.tryMove(p, novaCasellaClicada[0], novaCasellaClicada[1])) {
+                    board.mourePiece(p, novaCasellaClicada[0], novaCasellaClicada[1]);
+                    //revisem el jaque o ofegat
                     if (board.isCheckMate(!p.getColor())) {
-                        showEndGameDialog(
+                        mostraDialogFiJoc(
                             "Jaque mate.\nGanan las " + (p.getColor() ? "BLANCAS" : "NEGRAS")
                         );
+                    } else if (board.isStalemate(!p.getColor())) {
+                        mostraDialogFiJoc("Rey ahogado.\nEmpate");
                     }
-                    else if (board.isStalemate(!p.getColor())) {
-                        showEndGameDialog("Rey ahogado.\nEmpate");
+                    //Alternem torn (si no ha acabat la partida)
+                    if (!gameFinished) {
+                        board.seguentTorn();
                     }
                 }
                 // Limpiar selección
                 casellaClicada = null;
                 novaCasellaClicada = null;
-                possibleMoves.clear();
+                possibleMoviments.clear();
             }
         }
 
@@ -245,7 +260,7 @@ public class GameScreen implements Screen {
         stage.draw();
     }
 
-    private void showEndGameDialog(String message) {
+    private void mostraDialogFiJoc(String message) {
         gameFinished = true;
         Dialog dialog = new Dialog("Fin de la partida", skin) {
 

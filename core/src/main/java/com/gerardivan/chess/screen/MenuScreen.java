@@ -2,6 +2,7 @@ package com.gerardivan.chess.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,12 +21,14 @@ import com.badlogic.gdx.graphics.GL20;
 
 public class MenuScreen implements Screen {
 
-    private Main game;
+    private final Main game;
 
-    private Stage stage;
-    private Skin skin;
+    private final Stage stage;
+    private final Skin skin;
 
-    private static final float BOARD_SIZE = 800;
+    private final float MARGIN = 80; // margen en píxeles para botones/espacio UI
+
+    private final float BOARD_SIZE = Math.min(WORLD_WIDTH, WORLD_HEIGHT) - MARGIN;
     private float boardX, boardY;
     private Texture boardTexture;
     private SpriteBatch batch;
@@ -48,25 +51,31 @@ public class MenuScreen implements Screen {
 
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
-        // Calcular posición centrada
-        boardX = (WORLD_WIDTH - BOARD_SIZE) / 2f;
-        boardY = (WORLD_HEIGHT - BOARD_SIZE) / 2f;
 
+        boardX = (WORLD_WIDTH - BOARD_SIZE) / 2f; // centrar horizontal
+        boardY = (WORLD_HEIGHT - BOARD_SIZE) / 2f; // centrar vertical
         crearUI();
     }
 
+    /**
+     * Interfície de menú d'opcions inicial
+     */
     private void crearUI() {
-
         Table table = new Table();
         table.setFillParent(true);
         table.center();
 
         Label titulo = new Label("Escacs", skin);
-        titulo.setFontScale(2f);
+        titulo.setFontScale(3f);
 
         TextButton btnJugar = new TextButton("Jugar", skin);
-        TextButton btnOpcions = new TextButton("Opciones", skin);
-        TextButton btnSalir = new TextButton("Salir", skin);
+        btnJugar.getLabel().setFontScale(1.5f);
+        btnJugar.setColor(Color.GREEN);
+        TextButton btnOpcions = new TextButton("Opcions", skin);
+        btnOpcions.getLabel().setFontScale(1.5f);
+        TextButton btnSalir = new TextButton("Sortir", skin);
+        btnSalir.setColor(Color.RED);
+        btnSalir.getLabel().setFontScale(1.5f);
 
         btnSalir.addListener(new ClickListener() {
             @Override
@@ -92,13 +101,13 @@ public class MenuScreen implements Screen {
         table.add(titulo).padBottom(40);
         table.row();
 
-        table.add(btnJugar).width(200).height(50).pad(10);
+        table.add(btnJugar).width(300).height(80).pad(10);
         table.row();
 
-        table.add(btnOpcions).width(200).height(50).pad(10);
+        table.add(btnOpcions).width(300).height(80).pad(10);
         table.row();
 
-        table.add(btnSalir).width(200).height(50).pad(10);
+        table.add(btnSalir).width(300).height(80).pad(10);
 
         stage.addActor(table);
 
@@ -122,7 +131,7 @@ public class MenuScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
-        // Tablero fijo, centrado con márgenes
+        // Tablero centrado con margen
         batch.draw(boardTexture, boardX, boardY, BOARD_SIZE, BOARD_SIZE);
         batch.end();
 

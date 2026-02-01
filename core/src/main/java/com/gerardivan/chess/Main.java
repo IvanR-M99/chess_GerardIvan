@@ -9,15 +9,13 @@ import com.gerardivan.chess.screen.MenuScreen;
 public class Main extends Game {
 
     public SpriteBatch batch;
-
     private GameScreen actualGameScreen;
-
     private MenuScreen actualMenuScreen;
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        MenuScreen ms = new MenuScreen(this);
+        MenuScreen ms = new MenuScreen(this); //Inicialitzem el MenuScreen en iniciar el joc
         setActualMenuScreen(ms);
         setScreen(ms);
     }

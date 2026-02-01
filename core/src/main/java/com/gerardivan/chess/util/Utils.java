@@ -40,6 +40,10 @@ public class Utils {
         IMATGE_TAULER = "chess.com-boards-and-pieces/boards/" + s + ".png";
     }
 
+    /**
+     * Per carregar imatges de peces
+     * @param s ens dona el skin triat per a les peces
+     */
     public static void setPeçes(String s) {
         IMATGE_PEON_BLANC = "chess.com-boards-and-pieces/pieces/" + s + "/wp.png";
         IMATGE_PEON_NEGRE = "chess.com-boards-and-pieces/pieces/" + s + "/bp.png";
@@ -55,6 +59,10 @@ public class Utils {
         IMATGE_REI_NEGRE = "chess.com-boards-and-pieces/pieces/" + s + "/bk.png";
     }
 
+    /**
+     * Metode per obtenir llistat taulers
+     * @return
+     */
     public static String[] getNomTaulers() {
         final String DIRECOTIR_TAULERS = "chess.com-boards-and-pieces/boards";
 
@@ -71,6 +79,10 @@ public class Utils {
         return imatgesArr;
     }
 
+    /**
+     * Metode per obtenir llistat peces
+     * @return
+     */
     public static String[] getNomPeçes() {
         final String DIRECTORI_PEÇES = "chess.com-boards-and-pieces/pieces";
 
@@ -86,6 +98,11 @@ public class Utils {
         return imatgesArr;
     }
 
+    /**
+     * Mètode per cercar imatges tant de peces com de taulers, ja que és cridat des de tots dos llocs
+     * @param path
+     * @return la lllista de noms
+     */
     private static List<String> cercarImatges(String path) {
         final String DIRECTORI = path;
 

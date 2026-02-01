@@ -14,6 +14,7 @@ public class Piece {
 
     Tipus peça;
     boolean esBlanca;
+    boolean hasMoved = false;
     List<Integer> posicio;
     List<Integer> ultimaPosicio;
 
@@ -71,6 +72,10 @@ public class Piece {
         return posicio;
     }
 
+    /**
+     * Getter del color
+     * @return true si es blanca, false si és negra
+     */
     public boolean getColor() {
         return esBlanca;
     }
@@ -102,10 +107,9 @@ public class Piece {
 
     /**
      * Booleà per comprovar si la peça pot fer un moviment, ens envia al mètode
-     * concret
-     * de cada tipus de peça
+     * concret de cada tipus de peça
      */
-    public boolean canMoveTo(Board board, int destX, int destY) {
+    public boolean pucMoureA(Board board, int destX, int destY) {
         int x = posicio.get(0);
         int y = posicio.get(1);
 
@@ -114,22 +118,22 @@ public class Piece {
 
         switch (peça) {
             case Peon:
-                return canMovePeon(board, x, y, destX, destY);
+                return pucMourePeo(board, x, y, destX, destY);
             case Torre:
-                return canMoveTorre(board, x, y, destX, destY);
+                return pucMoureTorre(board, x, y, destX, destY);
             case Cavall:
-                return canMoveCavall(board, x, y, destX, destY);
+                return pucMoureCavall(board, x, y, destX, destY);
             case Alfil:
-                return canMoveAlfil(board, x, y, destX, destY);
+                return pucMoureAlfil(board, x, y, destX, destY);
             case Reina:
-                return canMoveReina(board, x, y, destX, destY);
+                return pucMoureReina(board, x, y, destX, destY);
             case Rei:
-                return canMoveRei(board, x, y, destX, destY);
+                return pucMoureReiEnroc(board, x, y, destX, destY);
         }
         return false;
     }
 
-    private boolean canMovePeon(Board board, int x, int y, int dx, int dy) {
+    private boolean pucMourePeo(Board board, int x, int y, int dx, int dy) {
         int dir = esBlanca ? 1 : -1; // Per controlar el sentit que pot avançar la peça
         int rowDiff = dy - y;
         int colDiff = dx - x;
@@ -156,7 +160,7 @@ public class Piece {
         return false;
     }
 
-    private boolean canMoveTorre(Board board, int x, int y, int dx, int dy) {
+    private boolean pucMoureTorre(Board board, int x, int y, int dx, int dy) {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
@@ -170,7 +174,7 @@ public class Piece {
         return board.isPathClear(x, y, dx, dy);
     }
 
-    private boolean canMoveCavall(Board board, int x, int y, int dx, int dy) {
+    private boolean pucMoureCavall(Board board, int x, int y, int dx, int dy) {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
@@ -184,7 +188,7 @@ public class Piece {
         return (cx == 2 && cy == 1) || (cx == 1 && cy == 2);
     }
 
-    private boolean canMoveAlfil(Board board, int x, int y, int dx, int dy) {
+    private boolean pucMoureAlfil(Board board, int x, int y, int dx, int dy) {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
@@ -198,7 +202,7 @@ public class Piece {
         return board.isPathClear(x, y, dx, dy);
     }
 
-    private boolean canMoveReina(Board board, int x, int y, int dx, int dy) {
+    private boolean pucMoureReina(Board board, int x, int y, int dx, int dy) {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
@@ -215,13 +219,25 @@ public class Piece {
         return board.isPathClear(x, y, dx, dy);
     }
 
-    private boolean canMoveRei(Board board, int x, int y, int dx, int dy) {
+    /**
+     * Mètode per comprovar si el rei es pot moure tenint en compte els seus moviments i també l'opció d'enrocar
+     * @param x
+     * @param y
+     * @param dx
+     * @param dy
+     * @return
+     */
+    private boolean pucMoureReiEnroc(Board board, int x, int y, int dx, int dy) {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
         if (target != null) {
             if (target.esBlanca == this.esBlanca)
                 return false;
+        }
+
+        if (!hasMoved && y == dy && Math.abs(dx - x) == 2) {
+            return board.pucEnrocar(this, dx > x);
         }
 
         return Math.abs(dx - x) <= 1 && Math.abs(dy - y) <= 1;

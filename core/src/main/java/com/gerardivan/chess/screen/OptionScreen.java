@@ -54,7 +54,7 @@ public class OptionScreen implements Screen {
         table.setFillParent(true);
         table.center();
 
-        Label titulo = new Label("PAUSA", skin);
+        Label titulo = new Label("OPCIONS DE TAULER", skin);
         titulo.setFontScale(2f);
 
         // Listas desplegables
@@ -98,14 +98,14 @@ public class OptionScreen implements Screen {
         // Añadir todo a la tabla
         table.add(titulo).padBottom(40);
         table.row();
-        table.add(new Label("Tauler:", skin)).pad(5);
-        table.add(taulersBox).width(200).pad(5);
+        table.add(new Label("Tauler:", skin)).pad(10);
+        table.add(taulersBox).width(200).pad(10);
         table.row();
-        table.add(new Label("Peca:", skin)).pad(5);
-        table.add(peonesBox).width(200).pad(5);
+        table.add(new Label("Peca:", skin)).pad(10);
+        table.add(peonesBox).width(200).pad(10);
         table.row().padTop(20);
         table.row();
-        table.add(btnTornar).width(200).height(50).colspan(2).pad(5);
+        table.add(btnTornar).width(200).height(50).colspan(2).pad(10);
 
         stage.addActor(table);
     }
