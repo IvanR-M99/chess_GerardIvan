@@ -9,9 +9,6 @@ public class Board {
 
     private static Piece[][] board; // el tauler és un array bidimensional de "peces", algunes null i altres no
 
-    private boolean reiBlancAtacat = false;
-    private boolean reiNegreAtacat = false;
-
     private boolean tornBlanques = true;
 
     public Board() {
@@ -93,9 +90,6 @@ public class Board {
 
         p.setPosicio(toCol, toRow);
 
-        reiBlancAtacat = estaReiJaque(true);
-        reiNegreAtacat = estaReiJaque(false);
-
         if (p.getTipus() == Piece.Tipus.Peon) {
             int y = p.getPosicio().get(1);
             if ((p.getColor() && y == 7) || (!p.getColor() && y == 0)) {
@@ -103,7 +97,7 @@ public class Board {
             }
         }
 
-        // ENROQUE: mover torre
+        // ENROCAMENT: moure torre
         if (p.getTipus() == Piece.Tipus.Rei && Math.abs(toCol - list.get(0)) == 2) {
             boolean kingSide = toCol > list.get(0);
 
@@ -159,14 +153,14 @@ public class Board {
     }
 
     /**
-     * Possible moviment, però no el fa realment, que torna a la posició inicial,
+     * Possible moviment, però no el fa realment, ja que torna a la posició inicial,
      * si no que és per mirar si és un moviment possible
      * @param p
      * @param toX
      * @param toY
      * @return true si és possible, i false si no (
      */
-    public boolean tryMove(Piece p, int toX, int toY) {
+    public boolean intentarMoviment(Piece p, int toX, int toY) {
         int fromX = p.getPosicio().get(0);
         int fromY = p.getPosicio().get(1);
 
@@ -177,14 +171,14 @@ public class Board {
         board[fromX][fromY] = null;
         p.setPosicio(toX, toY);
 
-        boolean inCheck = estaReiJaque(p.getColor());
+        boolean enJaque = estaReiJaque(p.getColor());
 
         // Deshacer
         board[fromX][fromY] = p;
         board[toX][toY] = captured;
         p.setPosicio(fromX, fromY);
 
-        return !inCheck; //si no està en jaque
+        return !enJaque; //si no està en jaque
     }
 
     /**
@@ -210,7 +204,7 @@ public class Board {
      * @param color
      * @return
      */
-    public boolean hasAnyLegalMove(boolean color) {
+    public boolean tincMovimentLegal(boolean color) {
         for (Piece[] row : board) {
             for (Piece p : row) {
                 if (p != null && p.getColor() == color) {
@@ -219,7 +213,7 @@ public class Board {
                         for (int row2 = 0; row2 < Utils.CELES_TAULER; row2++) {
 
                             if (p.pucMoureA(this, col, row2)
-                                && tryMove(p, col, row2)) {
+                                && intentarMoviment(p, col, row2)) {
                                 return true; // si hi ha almenys un moviment legal
                             }
                         }
@@ -237,7 +231,7 @@ public class Board {
      */
     public boolean isCheckMate(boolean color) {
         if (!estaReiJaque(color)) return false;
-        return !hasAnyLegalMove(color);
+        return !tincMovimentLegal(color);
     }
 
     /**
@@ -247,7 +241,7 @@ public class Board {
      */
     public boolean isStalemate(boolean color) {
         if (estaReiJaque(color)) return false;
-        return !hasAnyLegalMove(color);
+        return !tincMovimentLegal(color);
     }
 
     /**
@@ -291,12 +285,12 @@ public class Board {
         if (king.hasMoved) return false;
         if (estaReiJaque(king.getColor())) return false;
 
-        // en funció de l'enrroc que sigui, em mouré (crearé la torre) cap a la dreta o cap a l'esquerra
+        // en funció de l'enrroc que sigui, em mouré cap a la dreta o cap a l'esquerra
         int y = king.getPosicio().get(1);
-        int rookX = kingSide ? 7 : 0;
+        int rookX = kingSide ? 7 : 0; //la torre afectada
         int step = kingSide ? 1 : -1;
 
-        Piece rook = getPiece(rookX, y);
+        Piece rook = getPiece(rookX, y); //obtinc la torre per veure si s'ha mogut
         if (rook == null || rook.getTipus() != Piece.Tipus.Torre || rook.hasMoved)
             return false;
 

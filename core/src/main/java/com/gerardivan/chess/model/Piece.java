@@ -128,7 +128,7 @@ public class Piece {
             case Reina:
                 return pucMoureReina(board, x, y, destX, destY);
             case Rei:
-                return pucMoureReiEnroc(board, x, y, destX, destY);
+                return pucMoureRei(board, x, y, destX, destY);
         }
         return false;
     }
@@ -221,13 +221,13 @@ public class Piece {
 
     /**
      * Mètode per comprovar si el rei es pot moure tenint en compte els seus moviments i també l'opció d'enrocar
-     * @param x
-     * @param y
-     * @param dx
-     * @param dy
+     * @param x columna origen
+     * @param y fila origen
+     * @param dx columna destí
+     * @param dy fila destí
      * @return
      */
-    private boolean pucMoureReiEnroc(Board board, int x, int y, int dx, int dy) {
+    private boolean pucMoureRei(Board board, int x, int y, int dx, int dy) {
         // Peça en el destí
         Piece target = board.getPiece(dx, dy);
 
@@ -236,8 +236,11 @@ public class Piece {
                 return false;
         }
 
+        //ENROC (Validació): si no s'ha mogut la peça i la casella destí està a 2 de distància
         if (!hasMoved && y == dy && Math.abs(dx - x) == 2) {
+            //casuístiques vàries de l'enroc amb el mètode propi
             return board.pucEnrocar(this, dx > x);
+            //passem la peça i passem true si esnroc a la dreta (dx>x), i false al revés
         }
 
         return Math.abs(dx - x) <= 1 && Math.abs(dy - y) <= 1;

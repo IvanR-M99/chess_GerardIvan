@@ -3,7 +3,6 @@ package com.gerardivan.chess.util;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -44,7 +43,7 @@ public class Utils {
      * Per carregar imatges de peces
      * @param s ens dona el skin triat per a les peces
      */
-    public static void setPeçes(String s) {
+    public static void setPeces(String s) {
         IMATGE_PEON_BLANC = "chess.com-boards-and-pieces/pieces/" + s + "/wp.png";
         IMATGE_PEON_NEGRE = "chess.com-boards-and-pieces/pieces/" + s + "/bp.png";
         IMATGE_TORRE_BLANC = "chess.com-boards-and-pieces/pieces/" + s + "/wr.png";
@@ -64,9 +63,9 @@ public class Utils {
      * @return
      */
     public static String[] getNomTaulers() {
-        final String DIRECOTIR_TAULERS = "chess.com-boards-and-pieces/boards";
+        final String DIRECTORI_TAULERS = "chess.com-boards-and-pieces/boards";
 
-        List<String> imatges = cercarImatges(DIRECOTIR_TAULERS);
+        List<String> imatges = cercarImatges(DIRECTORI_TAULERS);
 
         String[] imatgesArr = new String[imatges.size()];
 
@@ -83,7 +82,7 @@ public class Utils {
      * Metode per obtenir llistat peces
      * @return
      */
-    public static String[] getNomPeçes() {
+    public static String[] getNomPeces() {
         final String DIRECTORI_PEÇES = "chess.com-boards-and-pieces/pieces";
 
         List<String> imatges = cercarImatges(DIRECTORI_PEÇES);
@@ -100,15 +99,15 @@ public class Utils {
 
     /**
      * Mètode per cercar imatges tant de peces com de taulers, ja que és cridat des de tots dos llocs
-     * @param path
-     * @return la lllista de noms
+     * @param path rep la ruta de les imatges
+     * @return la llista de noms
      */
     private static List<String> cercarImatges(String path) {
-        final String DIRECTORI = path;
+        String ruta = path;
 
         List<String> noms = new ArrayList<>();
 
-        FileHandle directori = Gdx.files.internal("chess.com-boards-and-pieces/boards");
+        FileHandle directori = Gdx.files.internal(ruta);
 
         if (directori.exists() && directori.isDirectory()) {
             FileHandle[] arxius = directori.list();

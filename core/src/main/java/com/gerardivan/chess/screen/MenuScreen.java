@@ -54,13 +54,13 @@ public class MenuScreen implements Screen {
 
         boardX = (WORLD_WIDTH - BOARD_SIZE) / 2f; // centrar horizontal
         boardY = (WORLD_HEIGHT - BOARD_SIZE) / 2f; // centrar vertical
-        crearUI();
+        menuOpcionsInici();
     }
 
     /**
      * Interfície de menú d'opcions inicial
      */
-    private void crearUI() {
+    private void menuOpcionsInici() {
         Table table = new Table();
         table.setFillParent(true);
         table.center();
@@ -70,11 +70,11 @@ public class MenuScreen implements Screen {
 
         TextButton btnJugar = new TextButton("Jugar", skin);
         btnJugar.getLabel().setFontScale(1.5f);
-        btnJugar.setColor(Color.GREEN);
+        btnJugar.setColor(Color.valueOf("#85D180"));
         TextButton btnOpcions = new TextButton("Opcions", skin);
         btnOpcions.getLabel().setFontScale(1.5f);
         TextButton btnSalir = new TextButton("Sortir", skin);
-        btnSalir.setColor(Color.RED);
+        btnSalir.setColor(Color.valueOf("#E04936"));
         btnSalir.getLabel().setFontScale(1.5f);
 
         btnSalir.addListener(new ClickListener() {
@@ -117,11 +117,15 @@ public class MenuScreen implements Screen {
      * Sirve para cuando vuelvas a esta pantalla se pueda seguir usando
      */
     public void recreateStage() {
-        stage.clear(); // Limpia todo
-        crearUI(); // Vuelve a crear la tabla y los botones
+        stage.clear(); // Neteja tot
+        menuOpcionsInici(); // Torna a crear la taula i botons
         Gdx.input.setInputProcessor(stage); // Reinicia input
     }
 
+    /**
+     * Pinta fotogrames 60 vegades per segon
+     * @param delta The time in seconds since the last render.
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -134,7 +138,6 @@ public class MenuScreen implements Screen {
         // Tablero centrado con margen
         batch.draw(boardTexture, boardX, boardY, BOARD_SIZE, BOARD_SIZE);
         batch.end();
-
         // Dibuja UI encima
         stage.act(delta);
         stage.draw();
@@ -147,6 +150,9 @@ public class MenuScreen implements Screen {
         boardY = (WORLD_HEIGHT - BOARD_SIZE) / 2f;
     }
 
+    /**
+     * Prepara la screen per a la seva redenderització constant (render()).
+     */
     @Override
     public void show() {
         batch = new SpriteBatch();

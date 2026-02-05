@@ -61,8 +61,8 @@ public class OptionScreen implements Screen {
         SelectBox<String> taulersBox = new SelectBox<>(skin);
         taulersBox.setItems(Utils.getNomTaulers()); // array con nombres de todos los tableros
 
-        SelectBox<String> peonesBox = new SelectBox<>(skin);
-        peonesBox.setItems(Utils.getNomPeçes()); // array con nombres de peones
+        SelectBox<String> pecesBox = new SelectBox<>(skin);
+        pecesBox.setItems(Utils.getNomPeces()); // array con nombres de piezas
 
         // Botones
         TextButton btnTornar = new TextButton("Tornar", skin);
@@ -85,12 +85,12 @@ public class OptionScreen implements Screen {
             }
         });
 
-        peonesBox.addListener(new ChangeListener() {
+        pecesBox.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 SelectBox<String> box = (SelectBox<String>) actor;
                 String selected = box.getSelected();
-                Utils.setPeçes(selected);
+                Utils.setPeces(selected);
             }
         });
 
@@ -102,7 +102,7 @@ public class OptionScreen implements Screen {
         table.add(taulersBox).width(200).pad(10);
         table.row();
         table.add(new Label("Peca:", skin)).pad(10);
-        table.add(peonesBox).width(200).pad(10);
+        table.add(pecesBox).width(200).pad(10);
         table.row().padTop(20);
         table.row();
         table.add(btnTornar).width(200).height(50).colspan(2).pad(10);
