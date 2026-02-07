@@ -90,6 +90,7 @@ public class Board {
 
         p.setPosicio(toCol, toRow);
 
+        //Promoció peó
         if (p.getTipus() == Piece.Tipus.Peon) {
             int y = p.getPosicio().get(1);
             if ((p.getColor() && y == 7) || (!p.getColor() && y == 0)) {
@@ -154,7 +155,7 @@ public class Board {
 
     /**
      * Possible moviment, però no el fa realment, ja que torna a la posició inicial,
-     * si no que és per mirar si és un moviment possible
+     * sino que és per mirar si és un moviment possible
      * @param p
      * @param toX
      * @param toY
@@ -166,14 +167,14 @@ public class Board {
 
         Piece captured = board[toX][toY];
 
-        // Simular movimiento
+        // Simular moviment
         board[toX][toY] = p;
         board[fromX][fromY] = null;
         p.setPosicio(toX, toY);
 
         boolean enJaque = estaReiJaque(p.getColor());
 
-        // Deshacer
+        // Desfer
         board[fromX][fromY] = p;
         board[toX][toY] = captured;
         p.setPosicio(fromX, fromY);
@@ -181,23 +182,6 @@ public class Board {
         return !enJaque; //si no està en jaque
     }
 
-    /**
-     * Per mostrar el taulell per pantalla (desenvolupador)
-     *
-     * @return el tauler pintat
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                sb.append(board[j][i]);
-            }
-            sb.append("\n");
-        }
-        return String.valueOf(sb);
-    }
 
     /**
      * Mètode per veure si (el rei ) té algun possible moviment (true) o no (false)
@@ -229,7 +213,7 @@ public class Board {
      * @param color
      * @return
      */
-    public boolean isCheckMate(boolean color) {
+    public boolean esJaqueMate(boolean color) {
         if (!estaReiJaque(color)) return false;
         return !tincMovimentLegal(color);
     }
@@ -239,7 +223,7 @@ public class Board {
      * @param color
      * @return
      */
-    public boolean isStalemate(boolean color) {
+    public boolean esReiOfegat(boolean color) {
         if (estaReiJaque(color)) return false;
         return !tincMovimentLegal(color);
     }
@@ -253,7 +237,7 @@ public class Board {
      * @param y2 columna desti
      * @return true si està lliure i false si no
      */
-    public boolean isPathClear(int x1, int y1, int x2, int y2) {
+    public boolean estaCamiLliure(int x1, int y1, int x2, int y2) {
         int dx = Integer.signum(x2 - x1); // Retorna 1 si avança, -1 si retrocedeix i 0 si no es mou
         int dy = Integer.signum(y2 - y1); // Retorna 1 si dreta, -1 si esquerra i 0 si no es mou de columna
 
@@ -329,6 +313,22 @@ public class Board {
         return false;
     }
 
+    /**
+     * Per mostrar el taulell per pantalla (desenvolupador)
+     *
+     * @return el tauler pintat
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
 
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                sb.append(board[j][i]);
+            }
+            sb.append("\n");
+        }
+        return String.valueOf(sb);
+    }
 
 }

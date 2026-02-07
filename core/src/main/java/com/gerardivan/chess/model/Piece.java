@@ -171,7 +171,7 @@ public class Piece {
 
         if (x != dx && y != dy)
             return false;
-        return board.isPathClear(x, y, dx, dy);
+        return board.estaCamiLliure(x, y, dx, dy);
     }
 
     private boolean pucMoureCavall(Board board, int x, int y, int dx, int dy) {
@@ -199,7 +199,7 @@ public class Piece {
 
         if (Math.abs(dx - x) != Math.abs(dy - y))
             return false;
-        return board.isPathClear(x, y, dx, dy);
+        return board.estaCamiLliure(x, y, dx, dy);
     }
 
     private boolean pucMoureReina(Board board, int x, int y, int dx, int dy) {
@@ -216,7 +216,7 @@ public class Piece {
 
         if (!recte && !diagonal)
             return false;
-        return board.isPathClear(x, y, dx, dy);
+        return board.estaCamiLliure(x, y, dx, dy);
     }
 
     /**

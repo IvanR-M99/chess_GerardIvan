@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -260,11 +259,11 @@ public class GameScreen implements Screen {
                     board.intentarMoviment(p, novaCasellaClicada[0], novaCasellaClicada[1])) {
                     board.mourePiece(p, novaCasellaClicada[0], novaCasellaClicada[1]);
                     //revisem el jaque o ofegat
-                    if (board.isCheckMate(!p.getColor())) {
+                    if (board.esJaqueMate(!p.getColor())) {
                         mostraDialogFiJoc(
                             "Escac i mat.\nGUANYEN les " + (p.getColor() ? "BLANQUES" : "NEGRES")
                         );
-                    } else if (board.isStalemate(!p.getColor())) {
+                    } else if (board.esReiOfegat(!p.getColor())) {
                         mostraDialogFiJoc("Rei ofegat.\nTaules");
                     }
                     //Alternem torn (si no ha acabat la partida)
